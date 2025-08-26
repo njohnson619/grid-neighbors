@@ -77,6 +77,9 @@ class Grid:
         row_lengths = [len(row) for row in grid]
         if len(set(row_lengths)) != 1:
             raise RuntimeError(f"Invalid grid shape. Row lengths: {row_lengths}")
+        # Non-Empty
+        if row_lengths[0] == 0:
+            raise RuntimeError(f"Empty row(s). Row lengths: {row_lengths}")
         # Cells
         for row in grid:
             for cell in row:

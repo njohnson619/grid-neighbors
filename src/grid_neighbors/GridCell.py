@@ -17,6 +17,7 @@ class GridCell:
             row: Row coordinate (0-based)
             col: Column coordinate (0-based)
         """
+        self._validate_cell(row, col)
         self.row = row
         self.col = col
         self.value = value
@@ -54,10 +55,13 @@ class GridCell:
         delta = self - other
         return abs(delta.row) + abs(delta.col)
 
-    def calc_and_save_distance(self, other: "GridCell") -> int:
-        self.value = self.manhattan_distance(other)
-        return self.value
-
     def copy(self, value=None):
         # TODO: make sure to deep copy `value` in case its an object
         return type(self)(self.row, self.col, self.value if value is None else value)
+
+    def _validate_cell(self, row, col):
+        # allow indices to be negative as a result of subtract operation
+        # TODO: Maybe derive new class that bypasses index validation, but inherits the rest of the functionality?
+        # if row < 0 or col < 0:
+        #     raise ValueError(f"Row({row}) and column({col}) must be non-negative")
+        pass
