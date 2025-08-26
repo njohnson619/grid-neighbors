@@ -51,3 +51,6 @@ class TestGrid:
             -99, 2, 3,
             -1, -6, -4
         ]
+
+    def test_off_nominal(self):
+        ...
