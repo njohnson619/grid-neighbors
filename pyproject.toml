@@ -17,6 +17,8 @@ dev-dependencies = [
     "pytest-mock",
     # for pycharm
     "setuptools",
+    "flask>=3.1.2",
+    "flask-cors>=6.0.1",
 ]
 
 [tool.rye.scripts]

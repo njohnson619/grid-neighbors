@@ -1,7 +1,7 @@
 from numbers import Number
 from typing import Tuple, Iterator, Sequence, TypeAlias
 
-from grid_neighbors.GridCell import GridCell
+from .GridCell import GridCell
 
 Matrix: TypeAlias = Sequence[Sequence[Number]]
 
