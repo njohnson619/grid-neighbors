@@ -13,6 +13,8 @@ set_global_log_level(logging.DEBUG)
 class BruteForce:
     def __init__(self, data: Matrix | Grid, max_distance: int, wrap_rows=False, wrap_cols=False):
         self.grid = data if isinstance(data, Grid) else Grid(data)
+        if max_distance < 0:
+            raise ValueError(f"Max distance must be non-negative. Received {max_distance}")
         self.max_distance = max_distance
         self.wrap_rows = wrap_rows
         self.wrap_cols = wrap_cols

@@ -96,9 +96,17 @@ class TestNeighbors:
             BruteForce(cast(Grid, None), 1).find_neighbors()
         with pytest.raises(RuntimeError, match=r"Grid not specified or empty"):
             BruteForce([], 1).find_neighbors()
-        with pytest.raises(RuntimeError, match=r"Grid not specified or empty"):
+        with pytest.raises(RuntimeError, match=r"Empty row\(s\)"):
             BruteForce([[]], 1).find_neighbors()
-        BruteForce([[0, 0], [0, 0]], 1).find_neighbors()
-        BruteForce(default, default.num_cols*default.num_rows).find_neighbors()
-        BruteForce(default, 0).find_neighbors()
-        BruteForce(default, -1).find_neighbors()
+        result = BruteForce([[0, 0], [0, 0]], 1).find_neighbors()
+        assert result["count"] == 0, f"Expected 0 neighbors, got {result}"
+        assert result["positive_cells"] == [], f"Expected empty positive cells, got {result}"
+        assert result["neighbors"] == [], f"Expected empty neighbors, got {result}"
+        result = BruteForce(default, default.num_cols*default.num_rows).find_neighbors()
+        assert result["count"] == default.num_rows*default.num_cols
+        result = BruteForce(default, 0).find_neighbors()
+        assert result["count"] == 2
+        assert len(result["positive_cells"]) == 2
+        assert len(result["neighbors"]) == 2
+        with pytest.raises(ValueError, match=r"Max distance must be non-negative"):
+            BruteForce(default, -1).find_neighbors()

@@ -5,29 +5,6 @@ from grid_neighbors import Grid
 
 
 class TestGrid:
-    def test_positive_cells(self):
-        with pytest.raises(RuntimeError, match=r"Invalid cell found"):
-            Grid([
-                [0, -1, 50],
-                ["s", 2, 3],
-                [-1, -6, -4]
-            ])
-        g = Grid([
-            [0, -1, 50],
-            [-99, 2, 3],
-            [-1, -6, -4]
-        ])
-        assert len(g.positive_cells) == 3
-
-    def test_sources_included(self):
-        pass
-
-    def test_unique_sources(self):
-        # pass duplicate sources to neighbors method
-
-        # assert only one source exists in result
-        pass
-
     @fixture
     def grid(self):
         return Grid([
@@ -35,6 +12,9 @@ class TestGrid:
             [-99, 2, 3],
             [-1, -6, -4]
         ])
+
+    def test_positive_cells(self, grid):
+        assert len(grid.positive_cells) == 3
 
     def test_pretty_print(self, grid):
         print(f"STR: {str(grid)}")
@@ -53,4 +33,16 @@ class TestGrid:
         ]
 
     def test_off_nominal(self):
-        ...
+        with pytest.raises(RuntimeError, match=r"Invalid cell found"):
+            Grid([
+                [0, -1, 50],
+                ["s", 2, 3],
+                [-1, -6, -4]
+            ])
+        with pytest.raises(RuntimeError, match=r"Invalid grid shape"):
+            Grid([
+                [0, -1, 50],
+                [0, 2],
+                [-1, -6, -4]
+            ])
+
