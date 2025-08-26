@@ -5,8 +5,8 @@ let cols = 0;
 function createGrid() {
     rows = parseInt(document.getElementById('rows').value);
     cols = parseInt(document.getElementById('cols').value);
-    
-    if (rows < 1 || cols < 1 || rows > 50 || cols > 50) {
+    // max dimensions are defined in html
+    if (rows < 1 || cols < 1) {
         alert('Please enter valid grid dimensions (1-50)');
         return;
     }
@@ -101,8 +101,8 @@ async function calculateNeighbors() {
     const wrapRows = document.getElementById('wrapRows').checked;
     const wrapCols = document.getElementById('wrapCols').checked;
     
-    if (distance < 0 || distance > 20) {
-        alert('Please enter a valid distance (0-20)');
+    if (distance < 0) {
+        alert('Please enter a non-negative distance (0-20)');
         return;
     }
     
@@ -210,9 +210,9 @@ function displayNeighbors(neighbors) {
         
         // Create a gradient from light blue to dark blue
         const intensity = 1 - (distance / maxDistance);
-        const blue = Math.round(180 + (75 * intensity)); // 180-255
-        const green = Math.round(200 + (55 * intensity)); // 200-255
-        const red = Math.round(230 + (25 * intensity)); // 230-255
+        const blue = Math.round(255 - (125 * intensity)); // 180-255
+        const green = Math.round(255 - (105 * intensity)); // 200-255
+        const red = Math.round(255 - (75 * intensity)); // 230-255
         
         return `rgb(${red}, ${green}, ${blue})`;
     };
