@@ -15,9 +15,6 @@ wheels/
 .envrc
 .python-version
 
-requirements.lock
-requirements-dev.lock
-
 .ruff_cache/
 .pytest_cache/
 
