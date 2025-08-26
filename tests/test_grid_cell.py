@@ -1,6 +1,6 @@
 from pytest import fixture
 
-from grid_cli import GridCell
+from grid_neighbors import GridCell
 
 class TestGridCell:
 

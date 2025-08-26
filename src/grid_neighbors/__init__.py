@@ -9,4 +9,4 @@ from .neighbor_searches import BruteForce
 from .Grid import Grid
 from .GridCell import GridCell
 
-__all__ = ['Grid', 'GridCell']
+__all__ = ['Grid', 'GridCell', 'BruteForce']

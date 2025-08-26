@@ -1,8 +1,8 @@
 import pytest
 from _pytest.fixtures import fixture
 
-from grid_cli.Grid import Grid
-from grid_cli.neighbor_searches import BruteForce
+from grid_neighbors.Grid import Grid
+from grid_neighbors.neighbor_searches import BruteForce
 
 class TestNeighbors:
     @fixture

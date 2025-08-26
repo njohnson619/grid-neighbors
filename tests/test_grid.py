@@ -1,7 +1,7 @@
 import pytest
 from _pytest.fixtures import fixture
 
-from grid_cli.Grid import Grid
+from grid_neighbors import Grid
 
 
 class TestGrid:

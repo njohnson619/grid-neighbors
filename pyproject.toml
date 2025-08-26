@@ -1,26 +1,35 @@
 [project]
-name = "grid-cli"
+name = "grid-neighbors"
 version = "0.1.0"
-description = "Grid-Cell Neighborhoods: Count cells within Manhattan distance of positive values"
+description = "Count number of cells within specified distance to positive number"
 authors = [
     { name = "Nathan Johnson", email = "6857803+njohnson619@users.noreply.github.com" }
 ]
-dependencies = []
-readme = "README.md"
+dependencies = [
+]
 requires-python = ">= 3.10"
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
 
 [tool.rye]
 managed = true
+virtual = true
 dev-dependencies = [
-    "pytest>=7.0.0",
+    "pytest",
+    "pytest-mock",
+    # for pycharm
+    "setuptools",
 ]
 
-[tool.hatch.metadata]
-allow-direct-references = true
+[tool.rye.scripts]
+"tree" = "tree --gitignore .gitignore"
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/grid_cli"]
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-s"
+xfail_strict = true
+#asyncio_mode = "auto"
+filterwarnings = [
+    "error"
+]
+minversion="6.0"
+log_level="DEBUG"

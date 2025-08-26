@@ -1,9 +1,9 @@
 import logging
 from typing import List, Set, Sequence
 
-from grid_cli.Grid import Grid, Matrix
-from grid_cli.GridCell import GridCell
-from grid_cli.Logger import create_logger, set_global_log_level
+from grid_neighbors.Grid import Grid, Matrix
+from grid_neighbors.GridCell import GridCell
+from grid_neighbors.Logger import create_logger, set_global_log_level
 
 logger = create_logger(__name__)
 
