@@ -1,3 +1,5 @@
+![Grid Neighbors Web Interface](neighbors_page.png)
+
 # grid-neighbors
 
 Grid-Cell Neighborhoods
