@@ -23,6 +23,9 @@ dev-dependencies = [
 
 [tool.rye.scripts]
 "tree" = "tree --gitignore .gitignore"
+"server" = "python app.py &"
+"client" = "open index.html"
+"app" = { chain = ["client", "server"] }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

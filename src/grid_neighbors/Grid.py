@@ -63,6 +63,23 @@ class Grid:
     def positive_cells(self) -> Sequence[GridCell]:
         return [cell for cell in self if cell.value > 0]
 
+    def get_immediate_neighbors(self, center_cell: GridCell, wrap_row=False, wrap_col=False) -> Sequence["GridCell"]:
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # up, down, left, right
+        neighbors = []
+        for dir in directions:
+            neighbor = center_cell + dir
+            if wrap_row:
+                neighbor.row %= self.num_rows
+            elif neighbor.row < 0 or neighbor.row >= self.num_rows:
+                continue
+
+            if wrap_col:
+                neighbor.col %= self.num_cols
+            elif neighbor.col < 0 or neighbor.col >= self.num_cols:
+                continue
+            neighbors.append(neighbor)
+        return neighbors
+
     def _validate_grid(self, grid: Matrix) -> None:
         """
         Validate expected requirements of grid.

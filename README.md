@@ -26,9 +26,20 @@
 > source .venv/bin/activate
 
 ## Execution
-### Start Server
-1. From project root directory, start Flask application
-> python app.py
+
+### Combined Client / Server
+> rye run app
+
+### Separate Client / Server
+
+#### Start Server
+1. From project root directory, start Flask application manually
+> python app.py &
+
+or with Rye
+> rye run server
+
+Expected logs when it starts correctly:
 ```Starting Grid Cell Neighborhoods API...
 Open http://localhost:8000/health to check if the server is running
 Frontend should be accessible by opening index.html in a web browser
@@ -49,8 +60,11 @@ Frontend should be accessible by opening index.html in a web browser
 127.0.0.1 - - [26/Aug/2025 12:54:43] "POST /calculate HTTP/1.1" 200 -
 ```
 
-### Run Client
+#### Run Client
 1.  Open `index.html` in a browser
+
+or with Rye
+> rye run client
 
 ### Usage
 Input values are bound by the task description

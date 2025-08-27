@@ -7,8 +7,6 @@ from .Logger import create_logger, set_global_log_level
 
 logger = create_logger(__name__)
 
-# usually log level is defined in environment
-set_global_log_level(logging.DEBUG)
 
 class BruteForce:
     def __init__(self, data: Matrix | Grid, max_distance: int, wrap_rows=False, wrap_cols=False):
@@ -31,9 +29,20 @@ class BruteForce:
 
         # iterate every single cell in the grid (brute force)
         for cell in self.grid:
-            # sort source cells by distance to current cell to determine if it's a neighbor
-            min_distance = min([src_cell.manhattan_distance(cell) for src_cell in src_cells])
-
+            # calculate distance to all source cells (considering possible index wrapping in
+            # both dimensions) and save the distance to the closest one
+            min_distance = min(
+                [
+                    src_cell.manhattan_distance(
+                        cell,
+                        wrap_row_at=self.grid.num_rows if self.wrap_rows else None,
+                        wrap_col_at=self.grid.num_cols if self.wrap_cols else None
+                    )
+                    for src_cell in src_cells
+                ]
+            )
+            # if closest source cell is in range, then current cell is a neighbor
+            # of at least one of the sources and should be included
             if min_distance <= self.max_distance:
                 # copy cell to preserve relative distance to the nearest source
                 new_neighbor = cell.copy(value=min_distance)
@@ -41,11 +50,8 @@ class BruteForce:
                 neighbors.add(new_neighbor)
                 if len(neighbors) == curr_ct:
                     logger.debug(f"\tSkipping duplicate neighbor: {new_neighbor}")
-            # else:
-            #     logger.debug(f"\tCurrent cell not in neighborhood, dist: {min_distance}")
 
         return self.create_result(list(neighbors), src_cells)
-
 
     def create_result(self, neighbors: Sequence[GridCell], source_cells: Sequence[GridCell]) -> dict:
         # autogen'd FE code expects a different format

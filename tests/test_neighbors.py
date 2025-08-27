@@ -5,6 +5,7 @@ from _pytest.fixtures import fixture
 
 from grid_neighbors.Grid import Grid
 from grid_neighbors.neighbor_searches import BruteForce
+from utils import render_ascii_table_with_distances
 
 class TestNeighbors:
     @fixture
@@ -32,7 +33,7 @@ class TestNeighbors:
         return Grid([
             [0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0],
-            [0, 5, 8, 0, 0],
+            [5, 8, 0, 0, 0],
             [0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0],
         ])
@@ -66,22 +67,40 @@ class TestNeighbors:
 
     def test_brute_force(self, default):
         result = BruteForce(default, 3).find_neighbors()
-        assert result and result["count"] == 24
+        assert result["count"] == 24
+        result = BruteForce(default, 3, wrap_rows=True).find_neighbors()
+        assert result["count"] == 24, render_ascii_table_with_distances(default, 2, result["neighbors"], wrap_rows=True)
+        result = BruteForce(default, 3, wrap_cols=True).find_neighbors()
+        assert result["count"] == 25, render_ascii_table_with_distances(default, 2, result["neighbors"], wrap_rows=True)
+        result = BruteForce(default, 3, wrap_rows=True, wrap_cols=True).find_neighbors()
+        assert result["count"] == 25, render_ascii_table_with_distances(default, 2, result["neighbors"], wrap_rows=True)
 
         result = BruteForce(default, 1).find_neighbors()
-        assert result and result["count"] == 10
+        assert result["count"] == 10
 
     def test_edges(self, overlapping_edges):
         result = BruteForce(overlapping_edges, 2).find_neighbors()
-        assert result and result["count"] == 12
+        assert result["count"] == 12
+        result = BruteForce(overlapping_edges, 2, wrap_rows=True).find_neighbors()
+        assert result["count"] == 19, render_ascii_table_with_distances(overlapping_edges, 2, result["neighbors"], wrap_rows=True)
+        result = BruteForce(overlapping_edges, 2, wrap_cols=True).find_neighbors()
+        assert result["count"] == 12, render_ascii_table_with_distances(overlapping_edges, 2, result["neighbors"], wrap_cols=True)
+        result = BruteForce(overlapping_edges, 2, wrap_rows=True, wrap_cols=True).find_neighbors()
+        assert result["count"] == 19, render_ascii_table_with_distances(overlapping_edges, 2, result["neighbors"], wrap_rows=True, wrap_cols=True)
 
     def test_adjacent(self, adjacent):
         result = BruteForce(adjacent, 3).find_neighbors()
-        assert result and result["count"] == 23
+        assert result["count"] == 19, render_ascii_table_with_distances(adjacent, 3, result["neighbors"])
+        result = BruteForce(adjacent, 3, wrap_rows=True).find_neighbors()
+        assert result["count"] == 19, render_ascii_table_with_distances(adjacent, 3, result["neighbors"], wrap_rows=True)
+        result = BruteForce(adjacent, 3, wrap_cols=True).find_neighbors()
+        assert result["count"] == 23, render_ascii_table_with_distances(adjacent, 3, result["neighbors"], wrap_cols=True)
+        result = BruteForce(adjacent, 3, wrap_rows=True, wrap_cols=True).find_neighbors()
+        assert result["count"] == 23, render_ascii_table_with_distances(adjacent, 3, result["neighbors"], wrap_rows=True, wrap_cols=True)
 
     def test_corners(self, corners):
         result = BruteForce(corners, 1).find_neighbors()
-        assert result and result["count"] == 12
+        assert result["count"] == 12
 
     def test_odd_shapes(self, odd_shapes):
         dist = [2, 2, 4]
@@ -89,7 +108,7 @@ class TestNeighbors:
         for i in range(len(odd_shapes)):
             grid, n, exp = odd_shapes[i], dist[i], expected[i]
             result = BruteForce(grid, n).find_neighbors()
-            assert result and result["count"] == exp, f"Failed on {grid=}, {n=}, {exp=}, {result=}"
+            assert result["count"] == exp, f"Failed on {grid=}, {n=}, {exp=}, {result=}"
 
     def test_off_nominal(self, default):
         with pytest.raises(RuntimeError, match=r"Grid not specified or empty"):
