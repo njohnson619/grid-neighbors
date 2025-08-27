@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Sequence
 
 class GridCell:
     """
@@ -40,20 +40,40 @@ class GridCell:
         the cell's value isn't hashable."""
         return hash((self.row, self.col))
 
-    def __add__(self, other):
-        return GridCell(self.row + other.row, self.col + other.col, self.value)
+    def __add__(self, other: "GridCell | tuple[int, int]"):
+        other_row, other_col = self.__get_row_col(other)
+        return type(self)(self.row + other_row, self.col + other_col, self.value)
 
-    def __sub__(self, other):
-        return GridCell(self.row - other.row, self.col - other.col, self.value)
+    def __iadd__(self, other: "GridCell | tuple[int, int]"):
+        other_row, other_col = self.__get_row_col(other)
+        self.row += other_row
+        self.col += other_col
+        return self
 
-    def manhattan_distance(self, other: 'GridCell') -> int:
+    def __sub__(self, other: "GridCell | tuple[int, int]"):
+        return type(self)(self.row - other.row, self.col - other.col, self.value)
+
+    def __isub__(self, other: "GridCell | tuple[int, int]"):
+        other_row, other_col = self.__get_row_col(other)
+        self.row -= other_row
+        self.col -= other_col
+        return self
+
+    def __abs__(self):
+        return type(self)(abs(self.row), abs(self.col), self.value)
+
+    def manhattan_distance(self, other: 'GridCell', wrap_row_at=None, wrap_col_at=None) -> int:
         """
         Calculate Manhattan distance to another GridCell.
 
         https://en.wikipedia.org/wiki/Taxicab_geometry
         """
-        delta = self - other
-        return abs(delta.row) + abs(delta.col)
+        dist = abs(self - other)
+        if wrap_row_at is not None:
+            dist.row = min(dist.row, wrap_row_at - dist.row)
+        if wrap_col_at is not None:
+            dist.col = min(dist.col, wrap_col_at - dist.col)
+        return dist.row + dist.col
 
     def copy(self, value=None):
         # TODO: make sure to deep copy `value` in case its an object
@@ -65,3 +85,7 @@ class GridCell:
         # if row < 0 or col < 0:
         #     raise ValueError(f"Row({row}) and column({col}) must be non-negative")
         pass
+
+    def __get_row_col(self, other: "GridCell | tuple[int, int]"):
+        return other if isinstance(other, tuple) else (other.row, other.col)
+

@@ -1,12 +1,19 @@
+import logging
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import heapq
 from collections import deque
 
+from src.grid_neighbors.Logger import set_global_log_level
 from src.grid_neighbors import Grid, BruteForce
 
 app = Flask(__name__)
 CORS(app)
+
+# usually log level is defined in environment
+set_global_log_level(logging.DEBUG)
+
 
 def calculate_neighbors_brute_force(grid: Grid, distance_threshold: int, wrap_rows=False, wrap_cols=False):
     """
