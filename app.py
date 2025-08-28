@@ -6,7 +6,7 @@ import heapq
 from collections import deque
 
 from src.grid_neighbors.Logger import set_global_log_level
-from src.grid_neighbors import Grid, BruteForce
+from src.grid_neighbors import Grid, BruteForceSearch
 
 app = Flask(__name__)
 CORS(app)
@@ -29,7 +29,8 @@ def calculate_neighbors_brute_force(grid: Grid, distance_threshold: int, wrap_ro
     Returns:
         Dictionary with count and detailed neighbor information
     """
-    return BruteForce(grid, distance_threshold, wrap_rows, wrap_cols).find_neighbors()
+    neighbors = BruteForceSearch(grid, distance_threshold, wrap_rows, wrap_cols).find_neighbors()
+    return BruteForceSearch.create_result(neighbors)
 
 def calculate_neighbors(grid, distance_threshold, algorithm='bfs', wrap_rows=False, wrap_cols=False):
     """
