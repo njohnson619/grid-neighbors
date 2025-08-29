@@ -1,11 +1,15 @@
-from typing import List
+from typing import List, Sequence
 
 from grid_neighbors import Grid, GridCell
 
-def render_ascii_table_with_distances(
+
+def assert_count(neighbors, grid, expected_count, distance, wrap_rows=False, wrap_cols=False):
+    assert len(neighbors) == expected_count, plot_ascii_table(grid, distance, neighbors, wrap_rows=wrap_rows, wrap_cols=wrap_cols)
+
+def plot_ascii_table(
     grid: Grid,
     N: int,
-    neighbors: dict,
+    neighbors: Sequence[GridCell],
     show_plus_on_sources: bool = True,
     dot_outside: str = ".",
     wrap_rows: bool = False,
@@ -33,7 +37,7 @@ def render_ascii_table_with_distances(
     header_cells = " ".join(cell(str(c)) for c in range(num_cols))
     header = f"{' ' * (row_idx_width + 1)}  {header_cells} "
 
-    n_map = {(c["row"], c["col"]): c["distance"] for c in neighbors}
+    n_map = {(c.row, c.col): c.value for c in neighbors}
 
     # Table header
     tab_hdr = f"{grid}, {N=}, {wrap_rows=}, {wrap_cols=} {len(neighbors)} neighbors"

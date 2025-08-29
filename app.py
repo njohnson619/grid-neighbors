@@ -2,11 +2,10 @@ import logging
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import heapq
-from collections import deque
 
+from src.grid_neighbors.neighbor_searches import BreadthFirstSearch
 from src.grid_neighbors.Logger import set_global_log_level
-from src.grid_neighbors import Grid, BruteForce
+from src.grid_neighbors import Grid, BruteForceSearch
 
 app = Flask(__name__)
 CORS(app)
@@ -15,21 +14,40 @@ CORS(app)
 set_global_log_level(logging.DEBUG)
 
 
-def calculate_neighbors_brute_force(grid: Grid, distance_threshold: int, wrap_rows=False, wrap_cols=False):
+def calculate_neighbors_bfs(grid: Grid, distance_threshold: int, wrap_rows=False, wrap_cols=False):
     """
-    BRUTE FORCE ALGORITHM - O(R×C×P) time complexity
-    Calculate the cells that fall within N steps of any positive values in the array.
-    
+    MULTI-SOURCE BFS ALGORITHM - O(R×C) time complexity
+    Use breadth-first search starting from all positive cells simultaneously.
+    Each BFS level represents cells at distance 1, 2, 3, etc. from nearest positive cell.
+
     Args:
         grid: 2D array where positive values are the starting points
         distance_threshold: Maximum Manhattan distance (N)
         wrap_rows: If True, rows wrap around (toroidal)
         wrap_cols: If True, columns wrap around (toroidal)
-    
+
     Returns:
         Dictionary with count and detailed neighbor information
     """
-    return BruteForce(grid, distance_threshold, wrap_rows, wrap_cols).find_neighbors()
+    neighbors = BreadthFirstSearch(grid, distance_threshold, wrap_rows, wrap_cols).find_neighbors()
+    return BreadthFirstSearch.create_result(neighbors)
+
+def calculate_neighbors_brute_force(grid: Grid, distance_threshold: int, wrap_rows=False, wrap_cols=False):
+    """
+    BRUTE FORCE ALGORITHM - O(R×C×P) time complexity
+    Calculate the cells that fall within N steps of any positive values in the array.
+
+    Args:
+        grid: 2D array where positive values are the starting points
+        distance_threshold: Maximum Manhattan distance (N)
+        wrap_rows: If True, rows wrap around (toroidal)
+        wrap_cols: If True, columns wrap around (toroidal)
+
+    Returns:
+        Dictionary with count and detailed neighbor information
+    """
+    neighbors = BruteForceSearch(grid, distance_threshold, wrap_rows, wrap_cols).find_neighbors()
+    return BruteForceSearch.create_result(neighbors)
 
 def calculate_neighbors(grid, distance_threshold, algorithm='bfs', wrap_rows=False, wrap_cols=False):
     """
@@ -46,8 +64,9 @@ def calculate_neighbors(grid, distance_threshold, algorithm='bfs', wrap_rows=Fal
         Dictionary with count and detailed neighbor information
     """
     if algorithm == 'brute_force':
-        result = calculate_neighbors_brute_force(grid, distance_threshold, wrap_rows, wrap_cols)
-        return result
+        return calculate_neighbors_brute_force(grid, distance_threshold, wrap_rows, wrap_cols)
+    elif algorithm == 'bfs':
+        return calculate_neighbors_bfs(grid, distance_threshold, wrap_rows, wrap_cols)
     else:
         return {"count": 0, "neighbors": [], "positive_cells": []}
 
