@@ -10,29 +10,38 @@ class Grid:
     """
     Read-only viewer for a two-dimensional matrix of numbers.
 
-    Provides basic validation and syntatic sugar for accessing individual cells.
+    The matrix is indexed as a table of rows and columns. Each dimension has the option of wrapping indices from
+    back to front. Numbers are encapsulated in GridCell objects when accessed that contain the value, row, and column.
     """
-    def __init__(self, data: Matrix):
+    # unit vectors for cardinal directions given row, col indices.
+    UP_DIR = -1, 0
+    DOWN_DIR = 1, 0
+    LEFT_DIR = 0, -1
+    RIGHT_DIR = 0, 1
+
+    def __init__(self, data: Matrix, wrap_rows=False, wrap_cols=False):
         # expect caller to provide consistent grid. methods assume this validation exists
         self._validate_grid(data)
         # store reference instead of copying to save time and memory. this means that methods
         # can't assume the grid remains unchanged between calls.
         self._data = data
+        self.wrap_rows = wrap_rows
+        self.wrap_cols = wrap_cols
 
     def __str__(self):
-        return f"Grid [{self.num_rows} X {self.num_cols}]"
+        r_str = f"R" if self.wrap_rows else f"_"
+        c_str = f"C" if self.wrap_cols else f"_"
+        return f"Grid[{r_str}{c_str}] ({self.num_rows} X {self.num_cols})"
 
     def __repr__(self):
         vals_str = "\n".join([" ".join(f"{val:>4}" for val in row) for row in self._data])
         return f"{str(self)}\n{vals_str}"
 
-    def __getitem__(self, row_col):
+    def __getitem__(self, row_col: Sequence[int]):
         """Enable `grid[row, col]` syntax for cell-specific values"""
-        if not isinstance(row_col, tuple):
-            raise ValueError(f"Row/Column must be tuple. Received {type(row_col)}, {row_col}")
-        self._validate_indices(*row_col)
-
-        row, col = row_col
+        if not isinstance(row_col, Sequence) or len(row_col) != 2:
+            raise TypeError(f"Row/Column must be a sequence (len 2). Received {type(row_col)}, {row_col}")
+        row, col = self._validate_indices(*row_col)
         return GridCell(row, col, self._data[row][col])
 
     def __iter__(self) -> Iterator[GridCell]:
@@ -60,24 +69,22 @@ class Grid:
         return self.shape[1]
 
     @property
-    def positive_cells(self) -> Sequence[GridCell]:
+    def num_cells(self) -> int:
+        return self.num_rows * self.num_cols
+
+    @property
+    def positive_cells(self) -> list[GridCell]:
         return [cell for cell in self if cell.value > 0]
 
-    def get_immediate_neighbors(self, center_cell: GridCell, wrap_row=False, wrap_col=False) -> Sequence["GridCell"]:
-        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # up, down, left, right
+    def get_immediate_neighbors(self, center_cell: GridCell) -> Sequence["GridCell"]:
         neighbors = []
-        for dir in directions:
-            neighbor = center_cell + dir
-            if wrap_row:
-                neighbor.row %= self.num_rows
-            elif neighbor.row < 0 or neighbor.row >= self.num_rows:
+        for direction in [self.UP_DIR, self.DOWN_DIR, self.LEFT_DIR, self.RIGHT_DIR]:
+            try:
+                # [] method is smart enough to wrap indexes when needed
+                neighbors.append(self[(center_cell + direction).coords])
+            except IndexError:
+                # neighbor is out of bounds and therefore doesn't exist
                 continue
-
-            if wrap_col:
-                neighbor.col %= self.num_cols
-            elif neighbor.col < 0 or neighbor.col >= self.num_cols:
-                continue
-            neighbors.append(neighbor)
         return neighbors
 
     def _validate_grid(self, grid: Matrix) -> None:
@@ -103,12 +110,14 @@ class Grid:
                 if not isinstance(cell, Number):
                     raise RuntimeError(f"Invalid cell found: {cell}")
 
-    def _validate_indices(self, row: int, col: int) -> bool:
+    def _validate_indices(self, row: int, col: int) -> tuple[int, int]:
         """
-        Indices must be within range of a standard matrix.
-
-        Caller must convert indices when using algorithms with wrapping edges.
+        Validate and modify (if necessary) the specified row/col to access
+        the source data matrix.
         """
-        if not (0 <= row < self.num_rows and 0 <= col < self.num_cols):
-            raise RuntimeError(f"Invalid row/col: ({row},{col})")
+        row_index = row % self.num_rows if self.wrap_rows else row
+        col_index = col % self.num_cols if self.wrap_cols else col
+        if row_index < 0 or row_index >= self.num_rows or col_index < 0 or col_index >= self.num_cols:
+            raise IndexError(f"Invalid row/col: ({row},{col}) for {str(self)}")
+        return row_index, col_index
 

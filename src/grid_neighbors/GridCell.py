@@ -1,3 +1,4 @@
+from numbers import Number
 from typing import Any, Sequence
 
 class GridCell:
@@ -30,7 +31,7 @@ class GridCell:
         """Check equality with another GridCell."""
         if isinstance(other, GridCell):
             return self.row == other.row and self.col == other.col
-        elif isinstance(other, tuple) and len(other) == 2:
+        elif isinstance(other, Sequence) and len(other) == 2:
             return self.row == other[0] and self.col == other[1]
         else:
             return False
@@ -62,6 +63,22 @@ class GridCell:
     def __abs__(self):
         return type(self)(abs(self.row), abs(self.col), self.value)
 
+    def __gt__(self, other: "GridCell | int"):
+        return self.value > self.__get_value(other)
+
+    def __ge__(self, other: "GridCell | int"):
+        return self.value >= self.__get_value(other)
+
+    def __lt__(self, other: "GridCell | int"):
+        return self.value < self.__get_value(other)
+
+    def __le__(self, other: "GridCell | int"):
+        return self.value <= self.__get_value(other)
+
+    @property
+    def coords(self) -> Sequence[int]:
+        return self.row, self.col
+
     def manhattan_distance(self, other: 'GridCell', wrap_row_at=None, wrap_col_at=None) -> int:
         """
         Calculate Manhattan distance to another GridCell.
@@ -86,6 +103,8 @@ class GridCell:
         #     raise ValueError(f"Row({row}) and column({col}) must be non-negative")
         pass
 
-    def __get_row_col(self, other: "GridCell | tuple[int, int]"):
-        return other if isinstance(other, tuple) else (other.row, other.col)
+    def __get_row_col(self, other: "GridCell | Sequence[int, int]") -> tuple[int, int]:
+        return (other.row, other.col) if isinstance(other, GridCell) else other
 
+    def __get_value(self, other: "GridCell | Number") -> Number:
+        return other.value if isinstance(other, GridCell) else other

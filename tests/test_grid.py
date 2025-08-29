@@ -22,8 +22,17 @@ class TestGrid:
 
     def test_get_item(self, grid):
         assert grid[2, 1].value == -6
-        with pytest.raises(RuntimeError, match=r"Invalid row/col"):
+        assert grid[[2, 1]].value == -6
+        assert grid[(2, 1)].value == -6
+        with pytest.raises(IndexError):
             _ = grid[44, 8]
+        with pytest.raises(IndexError):
+            _ = grid[50, 50]
+        grid.wrap_rows = True
+        assert grid[14, 1].value == -6
+        grid.wrap_cols = True
+        assert grid[2, 22].value == -6
+        assert grid[-1, -1].value == -4
 
     def test_iter(self, grid):
         assert [c.value for c in grid] == [

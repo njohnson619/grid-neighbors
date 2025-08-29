@@ -4,13 +4,13 @@ import pytest
 
 from grid_neighbors.Grid import Grid
 from grid_neighbors.neighbor_searches import BruteForceSearch
-from utils import assert_count
-
+from utils import assert_count, plot_ascii_table
 
 class TestBruteForce:
     def test_brute_force(self, default):
         result = BruteForceSearch(default, 3).find_neighbors()
         assert_count(result, default, 24, 3)
+        plot_ascii_table(default, 3, result)
 
         result = BruteForceSearch(default, 3, wrap_rows=True).find_neighbors()
         assert_count(result, default, 24, 2, wrap_rows=True)
