@@ -22,6 +22,10 @@ class TestGridCell:
     def test_distance(self, cells):
         assert cells[0].manhattan_distance(cells[1]) == 5
         assert cells[1].manhattan_distance(cells[0]) == 5
+        g1 = GridCell(1, 2, 0)
+        g2 = GridCell(1, 4, 0)
+        assert g1.chebyshev_distance(g2) == 2
+
 
     def test_ops(self, cells):
         assert cells[0] + cells[1] == (4, 7)

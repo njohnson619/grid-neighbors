@@ -113,7 +113,7 @@ class BruteForceSearch(SearchBase):
             # both dimensions) and save the distance to the closest one
             min_distance = min(
                 [
-                    src_cell.manhattan_distance(
+                    src_cell.chebyshev_distance(
                         cell,
                         wrap_row_at=num_rows if self.grid.wrap_rows else None,
                         wrap_col_at=num_cols if self.grid.wrap_cols else None

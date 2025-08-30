@@ -1,5 +1,5 @@
 from numbers import Number
-from typing import Tuple, Iterator, Sequence, TypeAlias
+from typing import Tuple, Iterator, Sequence, TypeAlias, Optional
 
 from .GridCell import GridCell
 
@@ -14,12 +14,27 @@ class Grid:
     back to front. Numbers are encapsulated in GridCell objects when accessed that contain the value, row, and column.
     """
     # unit vectors for cardinal directions given row, col indices.
-    UP_DIR = -1, 0
-    DOWN_DIR = 1, 0
-    LEFT_DIR = 0, -1
-    RIGHT_DIR = 0, 1
+    NW_DIR = 1, -1
+    N_DIR = -1, 0
+    NE_DIR = 1, 1
+    E_DIR = 0, 1
+    SE_DIR = -1, 1
+    S_DIR = 1, 0
+    SW_DIR = -1, -1
+    W_DIR = 0, -1
 
-    def __init__(self, data: Matrix, wrap_rows=False, wrap_cols=False):
+    DISTANCE_TYPES = {
+        "manhattan": "manhattan_distance",
+        "chebyshev": "chebyshev_distance",
+    }
+
+    def __init__(
+        self,
+        data: Matrix,
+        wrap_rows: bool = False,
+        wrap_cols: bool = False,
+        distance_type: Optional[str]=None
+    ):
         # expect caller to provide consistent grid. methods assume this validation exists
         self._validate_grid(data)
         # store reference instead of copying to save time and memory. this means that methods
@@ -27,6 +42,7 @@ class Grid:
         self._data = data
         self.wrap_rows = wrap_rows
         self.wrap_cols = wrap_cols
+        self.distance_type = distance_type or "manhattan"
 
     def __str__(self):
         r_str = f"R" if self.wrap_rows else f"_"
@@ -76,9 +92,18 @@ class Grid:
     def positive_cells(self) -> list[GridCell]:
         return [cell for cell in self if cell.value > 0]
 
-    def get_immediate_neighbors(self, center_cell: GridCell) -> Sequence["GridCell"]:
+    def get_immediate_neighbors(
+        self,
+        center_cell: GridCell,
+    ) -> Sequence["GridCell"]:
         neighbors = []
-        for direction in [self.UP_DIR, self.DOWN_DIR, self.LEFT_DIR, self.RIGHT_DIR]:
+        directions = [
+            self.N_DIR, self.S_DIR, self.W_DIR, self.E_DIR
+        ] if self.distance_type == "manhattan" else [
+            self.N_DIR, self.S_DIR, self.W_DIR, self.E_DIR,
+            self.NW_DIR, self.NE_DIR, self.SW_DIR, self.SE_DIR
+        ]
+        for direction in directions:
             try:
                 # [] method is smart enough to wrap indexes when needed
                 neighbors.append(self[(center_cell + direction).coords])

@@ -98,6 +98,7 @@ async function calculateNeighbors() {
     
     const distance = parseInt(document.getElementById('distance').value);
     const algorithm = document.getElementById('algorithm').value;
+    const distanceType = document.getElementById('distanceType').value;
     const wrapRows = document.getElementById('wrapRows').checked;
     const wrapCols = document.getElementById('wrapCols').checked;
     
@@ -139,6 +140,7 @@ async function calculateNeighbors() {
                 grid: grid,
                 distance: distance,
                 algorithm: algorithm,
+                distance_type: distanceType,
                 wrap_rows: wrapRows,
                 wrap_cols: wrapCols
             })
