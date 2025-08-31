@@ -107,20 +107,21 @@ class BruteForceSearch(SearchBase):
         # unique list of cells in the neighborhood (ignoring value)
         neighbors = set()
 
-        # iterate every single cell in the grid (brute force)
+        # iterate every single cell in the grid against every source cell (brute force)
         for cell in self.grid:
-            # calculate distance to all source cells (considering possible index wrapping in
-            # both dimensions) and save the distance to the closest one
-            min_distance = min(
-                [
-                    src_cell.chebyshev_distance(
+            dists = []
+            for src_cell in src_cells:
+                # calculate distance to all source cells (considering possible index wrapping in
+                # both dimensions) and save the distance to the closest one
+                dist_func = src_cell.chebyshev_distance if self.grid.distance_type == "chebyshev" else src_cell.manhattan_distance
+                dists.append(
+                    dist_func(
                         cell,
                         wrap_row_at=num_rows if self.grid.wrap_rows else None,
                         wrap_col_at=num_cols if self.grid.wrap_cols else None
                     )
-                    for src_cell in src_cells
-                ]
-            )
+                )
+            min_distance = min(dists)
             # if closest source cell is in range, then current cell is a neighbor
             # of at least one of the sources and should be included
             if min_distance <= self.max_distance:
