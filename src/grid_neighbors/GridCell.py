@@ -1,3 +1,4 @@
+import math
 from numbers import Number
 from typing import Any, Sequence
 
@@ -85,12 +86,12 @@ class GridCell:
 
         https://en.wikipedia.org/wiki/Taxicab_geometry
         """
-        dist = abs(self - other)
-        if wrap_row_at is not None:
-            dist.row = min(dist.row, wrap_row_at - dist.row)
-        if wrap_col_at is not None:
-            dist.col = min(dist.col, wrap_col_at - dist.col)
+        dist = self.__get_abs_delta(other, wrap_row_at, wrap_col_at)
         return dist.row + dist.col
+
+    def chebyshev_distance(self, other: 'GridCell', wrap_row_at=None, wrap_col_at=None) -> int:
+        dist = self.__get_abs_delta(other, wrap_row_at, wrap_col_at)
+        return max(dist.row, dist.col)
 
     def copy(self, value=None):
         # TODO: make sure to deep copy `value` in case its an object
@@ -108,3 +109,11 @@ class GridCell:
 
     def __get_value(self, other: "GridCell | Number") -> Number:
         return other.value if isinstance(other, GridCell) else other
+
+    def __get_abs_delta(self, other: "GridCell", wrap_row_at=None, wrap_col_at=None) -> "GridCell":
+        dist = abs(self - other)
+        if wrap_row_at is not None:
+            dist.row = min(dist.row, wrap_row_at - dist.row)
+        if wrap_col_at is not None:
+            dist.col = min(dist.col, wrap_col_at - dist.col)
+        return dist
